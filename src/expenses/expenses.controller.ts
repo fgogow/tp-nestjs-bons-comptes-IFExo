@@ -1,8 +1,9 @@
-import { Controller, Get, Param, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import type { AuthenticatedRequest } from '../auth/authenticated-request.js';
 import { JwtAuthGuard } from '../auth/guards/auth.guard.js';
 import { ApiJwtAuth } from '../common/swagger/api-docs.decorators.js';
+import { CreateExpenseDto } from './dto/create-expense.dto.js';
 import { ExpensesService } from './expenses.service.js';
 
 @Controller('wallets/:walletId/expenses')
@@ -20,7 +21,14 @@ export class ExpensesController {
     return this.expensesService.findAll(walletId, req.user.userId);
   }
 
-  // TODO étape 2 : route POST (déclarer une dépense). Utilisez @Body() avec CreateExpenseDto.
+  @Post()
+  create(
+    @Param('walletId') walletId: string,
+    @Req() req: AuthenticatedRequest,
+    @Body() dto: CreateExpenseDto,
+  ) {
+    return this.expensesService.create(walletId, req.user.userId, dto);
+  }
 
   // TODO étape 3 : route DELETE ':id' protégée par ExpenseOwnerGuard (@UseGuards).
   //   Répondre 204 (@HttpCode(HttpStatus.NO_CONTENT)).
